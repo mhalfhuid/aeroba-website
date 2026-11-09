@@ -32,14 +32,14 @@
     breath += (i ? 'L' : 'M') + X(x).toFixed(1) + ' ' + y(bb).toFixed(1);
   }
   const grid = [12, 9, 7].map(b =>
-    `<line x1="${L}" x2="${W - R}" y1="${y(b)}" y2="${y(b)}" stroke="rgba(197,126,203,.15)"/>` +
-    `<text x="${L - 8}" y="${y(b) + 5}" text-anchor="end" fill="#A895AE" font-size="13" font-family="Spectral">${b}</text>`).join('');
+    `<line x1="${L}" x2="${W - R}" y1="${y(b)}" y2="${y(b)}" stroke="rgba(154,85,160,.14)"/>` +
+    `<text x="${L - 8}" y="${y(b) + 5}" text-anchor="end" fill="#7E6F88" font-size="13" font-family="Spectral">${b}</text>`).join('');
   svg.innerHTML = grid +
-    `<text x="${L}" y="${H - 8}" fill="#A895AE" font-size="13" font-style="italic" font-family="Spectral">start</text>` +
-    `<text x="${W - R}" y="${H - 8}" text-anchor="end" fill="#A895AE" font-size="13" font-style="italic" font-family="Spectral">10 min</text>` +
-    `<path class="g-breath" d="${breath}" fill="none" stroke="#F0E6F1" stroke-width="2.2" stroke-linejoin="round"/>` +
-    `<path class="g-tone" d="${tone}" fill="none" stroke="#E3A6E8" stroke-width="2" stroke-dasharray="6 5"/>` +
-    `<circle cx="${X(1)}" cy="${y(7)}" r="5" fill="#E6D1A6"/>`;
+    `<text x="${L}" y="${H - 8}" fill="#7E6F88" font-size="13" font-style="italic" font-family="Spectral">start</text>` +
+    `<text x="${W - R}" y="${H - 8}" text-anchor="end" fill="#7E6F88" font-size="13" font-style="italic" font-family="Spectral">10 min</text>` +
+    `<path class="g-breath" d="${breath}" fill="none" stroke="#2B1D33" stroke-width="2.2" stroke-linejoin="round"/>` +
+    `<path class="g-tone" d="${tone}" fill="none" stroke="#B06DB6" stroke-width="2" stroke-dasharray="6 5"/>` +
+    `<circle cx="${X(1)}" cy="${y(7)}" r="5" fill="#D9BC86"/>`;
   // draw-on when it scrolls into view
   const paths = svg.querySelectorAll('path');
   paths.forEach(p => { const len = p.getTotalLength(); p.style.strokeDasharray = p.classList.contains('g-tone') ? '' : len; p.style.strokeDashoffset = p.classList.contains('g-tone') ? 0 : len; });

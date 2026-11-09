@@ -1,8 +1,7 @@
 // Aeroba in the browser: the exhale tone, leading from 12 breaths a minute to 7.
-// The tone follows the app's recipe (aeroba-exhale-tone skill), synthesised here:
-// start 3 semitones low, raised-cosine scoop to the note by 200 ms, steady body,
-// a 200 ms accelerating fall of −20.8 cents, the fallen pitch held for the last
-// 500 ms, and the exponential end fade. Pitch ladder as in the app:
+// The real app tones: the Shakuhachi exhale files (exhale_tone_true_v3) and the
+// C2+G2 ground, as in Aeroba/Room. Each breath plays the shortest file that covers
+// its exhale; a longer file fades softly at the exhale's end (keepToneShape). Pitch ladder as in the app:
 // C5 (≥10 bpm) · A4 (8.6–10) · G4 (7.2–8.6) · E4 (below 7.2) — it never rises in the guided session.
 (function () {
   const $ = id => document.getElementById(id);
@@ -33,15 +32,13 @@
   // ── helpers ──
   const ease = x => (1 - Math.cos(Math.PI * Math.min(1, Math.max(0, x)))) / 2;
   const ratio = bpm => Math.min(1, Math.max(0.7, 0.7 + 0.3 * (bpm - 6) / 6));   // inhale : exhale
-  const pitch = bpm => bpm >= 10 ? 523.25 : bpm >= 8.6 ? 440 : bpm >= 7.2 ? 392 : 329.63;
+  const pitch = bpm => bpm >= 10 ? 'C5' : bpm >= 8.6 ? 'A4' : bpm >= 7.2 ? 'G4' : 'E4';
+  // file lengths per note, and the gain that puts every note's loudest moment at the same level (measured)
+  const TONES = { C5: [[1.5, 2, 2.5, 3, 3.5], 0.34], A4: [[2.5, 3, 3.5, 4, 4.5], 0.29],
+                  G4: [[3, 3.5, 4, 4.5, 5, 5.5], 0.31], E4: [[3.5, 4, 4.5, 5, 5.5, 6, 6.5], 0.25] };
+  const toneUrl = (n, L) => `audio/tone-${n}-${L.toFixed(1)}.m4a`;
   const guidedBpm = t => 12 - 5 * ease((t - toneStart) / GLIDE);
 
-  function makeNoise(seconds) {
-    const b = ctx.createBuffer(1, ctx.sampleRate * seconds, ctx.sampleRate), d = b.getChannelData(0);
-    let p = 0;   // pinkish
-    for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; p = 0.97 * p + 0.03 * w; d[i] = (w * 0.35 + p * 3.2) * 0.5; }
-    return b;
-  }
   function makeReverb(seconds) {
     const len = ctx.sampleRate * seconds, b = ctx.createBuffer(2, len, ctx.sampleRate);
     for (let c = 0; c < 2; c++) {
@@ -61,32 +58,31 @@
     N.master = ctx.createGain(); N.master.gain.value = 0;
     N.master.connect(comp).connect(ctx.destination);
     N.reverb = ctx.createConvolver(); N.reverb.buffer = makeReverb(3.4);
-    N.wet = ctx.createGain(); N.wet.gain.value = 0.55; N.reverb.connect(N.wet).connect(N.master);
+    N.wet = ctx.createGain(); N.wet.gain.value = 0.35; N.reverb.connect(N.wet).connect(N.master);
     N.duck = ctx.createGain(); N.duck.gain.value = 1; N.duck.connect(N.master);
-    N.duckSend = ctx.createGain(); N.duckSend.gain.value = 1; N.duck.connect(N.duckSend); // (dry only)
-    N.toneBus = ctx.createGain(); N.toneBus.gain.value = 0.3; N.toneBus.connect(N.duck);
-    N.toneSend = ctx.createGain(); N.toneSend.gain.value = 0.42; N.toneBus.connect(N.toneSend).connect(N.reverb);
-    N.noise = makeNoise(4);
-    const real = new Float32Array([0, 1, 0.16, 0.07, 0.035, 0.015]);
-    N.wave = ctx.createPeriodicWave(real, new Float32Array(real.length));
-    // the ground: C2 + G2, very low, slowly moving
+        N.toneBus = ctx.createGain(); N.toneBus.gain.value = 1; N.toneBus.connect(N.duck);
+    N.toneSend = ctx.createGain(); N.toneSend.gain.value = 0.22; N.toneBus.connect(N.toneSend).connect(N.reverb);
+    // the ground: the app's C2+G2 recording, looped, about 9 dB under the tone
     N.ground = ctx.createGain(); N.ground.gain.value = 0;
-    const glp = ctx.createBiquadFilter(); glp.type = 'lowpass'; glp.frequency.value = 420;
-    [[65.41, 1], [98.0, 0.7], [130.81, 0.18]].forEach(([f, a]) => {
-      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
-      const g = ctx.createGain(); g.gain.value = a; o.connect(g).connect(glp); o.start();
-    });
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.06;
-    const lfoG = ctx.createGain(); lfoG.gain.value = 0.25;
-    const groundAmp = ctx.createGain(); groundAmp.gain.value = 1;
-    lfo.connect(lfoG).connect(groundAmp.gain); lfo.start();
-    glp.connect(groundAmp).connect(N.ground);
     N.ground.connect(N.duck);
-    const gs = ctx.createGain(); gs.gain.value = 0.25; N.ground.connect(gs).connect(N.reverb);
+    const gs = ctx.createGain(); gs.gain.value = 0.15; N.ground.connect(gs).connect(N.reverb);
     N.voice = ctx.createGain(); N.voice.gain.value = 1.15; N.voice.connect(N.master);
     const vs = ctx.createGain(); vs.gain.value = 0.10; N.voice.connect(vs).connect(N.reverb);   // same room
   }
 
+  async function loadBuffer(key, url) {
+    if (buffers[key]) return;
+    try { const r = await fetch(url); buffers[key] = await ctx.decodeAudioData(await r.arrayBuffer()); } catch (e) { /* skip */ }
+  }
+  async function loadTones() {
+    const jobs = [loadBuffer('ground', 'audio/ground-C2G2.m4a')];
+    for (const [n, [lens]] of Object.entries(TONES)) lens.forEach(L => jobs.push(loadBuffer(n + L, toneUrl(n, L))));
+    await Promise.all(jobs);
+    if (buffers.ground && !N.groundSrc) {
+      N.groundSrc = ctx.createBufferSource(); N.groundSrc.buffer = buffers.ground; N.groundSrc.loop = true;
+      N.groundSrc.connect(N.ground); N.groundSrc.start();
+    }
+  }
   async function loadVoices() {
     const jobs = Object.entries(VOICE).map(async ([k, url]) => {
       if (buffers[k]) return;
@@ -96,45 +92,23 @@
   }
 
   // ── sounds ──
-  function tone(t, D, f) {
-    D = Math.max(1.6, Math.min(D, 6.5));
-    const S = Math.pow(2, -3 / 12), FALL = 517 / 523.25, H = 0.067, FS = D - 0.7;
-    const n = Math.ceil(D * 120), hz = new Float32Array(n), amp = new Float32Array(n), air = new Float32Array(n);
-    const F = Math.min(2, Math.max(0.75, 0.5 * D)), K = 2;
-    for (let i = 0; i < n; i++) {
-      const tt = i / (n - 1) * D;
-      let h = f * S * Math.pow(1 / S, ease((tt - H) / (0.2 - H)));
-      if (tt >= FS) h = f * Math.pow(FALL, Math.pow(Math.min(1, (tt - FS) / 0.2), 3));
-      hz[i] = h;
-      let a = Math.min(1, tt / 0.05) * (0.82 + 0.18 * ease(tt / 0.3));
-      const fx = (tt - (D - F)) / F;
-      if (fx > 0) a *= (Math.exp(-K * fx) - Math.exp(-K)) / (1 - Math.exp(-K));
-      amp[i] = Math.max(0, a);
-      air[i] = Math.max(0, 0.9 * Math.exp(-tt / 0.09) * Math.min(1, tt / 0.012) + 0.16 * amp[i]);
+  function tone(t, ex, note) {
+    const [lens, gain] = TONES[note];
+    let L = lens.find(x => x >= ex - 0.05);
+    if (L === undefined) L = lens[lens.length - 1];
+    const b = buffers[note + L];
+    if (!b) return;
+    const src = ctx.createBufferSource(); src.buffer = b;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + 0.03);   // 30 ms in
+    if (b.duration > ex + 0.05) {   // the exhale is shorter than the file: a soft exponential fade
+      const f = Math.min(0.8, 0.3 * ex);
+      g.gain.setValueAtTime(gain, t + ex - f);
+      g.gain.setTargetAtTime(0, t + ex - f, f / 4);
     }
-    const o = ctx.createOscillator(); o.setPeriodicWave(N.wave);
-    o.frequency.setValueCurveAtTime(hz, t, D);
-    const vib = ctx.createOscillator(); vib.frequency.value = 4.7;
-    const vibG = ctx.createGain(); vibG.gain.setValueAtTime(0, t); vibG.gain.setValueAtTime(0, t + 0.7); vibG.gain.linearRampToValueAtTime(f * 0.0035, t + 1.8);
-    vib.connect(vibG).connect(o.frequency);
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3800; lp.Q.value = 0.3;
-    const g = ctx.createGain(); g.gain.value = 0; g.gain.setValueCurveAtTime(amp, t, D);
-    o.connect(lp).connect(g).connect(N.toneBus);
-    const nz = ctx.createBufferSource(); nz.buffer = N.noise; nz.loop = true;
-    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f * 2.2; bp.Q.value = 0.9;
-    const ng = ctx.createGain(); ng.gain.value = 0; ng.gain.setValueCurveAtTime(air, t, D);
-    const nlevel = ctx.createGain(); nlevel.gain.value = 0.55;
-    nz.connect(bp).connect(ng).connect(nlevel).connect(N.toneBus);
-    [o, vib, nz].forEach(s => { s.start(t); s.stop(t + D + 0.05); });
-  }
-  function inhaleAir(t, D) {
-    const n = 64, env = new Float32Array(n);
-    for (let i = 0; i < n; i++) env[i] = Math.pow(Math.sin(Math.PI * i / (n - 1)), 1.6) * 0.07;
-    const nz = ctx.createBufferSource(); nz.buffer = N.noise; nz.loop = true;
-    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 700; bp.Q.value = 0.5;
-    const g = ctx.createGain(); g.gain.value = 0; g.gain.setValueCurveAtTime(env, t, D);
-    nz.connect(bp).connect(g).connect(N.duck);
-    nz.start(t, Math.random() * 3); nz.stop(t + D + 0.05);
+    src.connect(g).connect(N.toneBus);
+    src.start(t);
+    if (b.duration > ex + 0.05) src.stop(t + ex + 0.2);
   }
   function say(name, t) {
     const b = buffers[name];
@@ -161,7 +135,6 @@
     const ins = period * r / (1 + r), ex = period - ins;
     timeline.push({ t0: t, ins, ex, bpm });
     if (timeline.length > 60) timeline.shift();
-    inhaleAir(t, ins);
     tone(t + ins, ex, pitch(bpm));
     if (mode === 'guided') {
       if (!flags.middle && bpm <= 9.6) { flags.middle = true; say('middle', t + 0.3); }
@@ -185,12 +158,13 @@
     startBtn.disabled = true; startBtn.textContent = 'Loading…';
     if (!ctx) await setup();
     if (ctx.state === 'suspended') await ctx.resume();
+    await loadTones();
     if (mode === 'guided' && voiceBox.checked) await loadVoices();
     const now = ctx.currentTime + 0.1;
     timeline = []; flags = {}; endAt = Infinity; voiceUntil = 0; history.length = 0;
     lastBpm = mode === 'free' ? freeBpm : 12;
     N.master.gain.cancelScheduledValues(now); N.master.gain.setValueAtTime(0, now); N.master.gain.linearRampToValueAtTime(1, now + 1.5);
-    N.ground.gain.cancelScheduledValues(now); N.ground.gain.setValueAtTime(0, now); N.ground.gain.linearRampToValueAtTime(0.05, now + 6);
+    N.ground.gain.cancelScheduledValues(now); N.ground.gain.setValueAtTime(0, now); N.ground.gain.linearRampToValueAtTime(0.19, now + 6);
     N.duck.gain.cancelScheduledValues(now); N.duck.gain.setValueAtTime(1, now);
     let first = now + 2.5;
     if (mode === 'guided' && voiceBox.checked && buffers.welcome) first = say('welcome', now + 1.2) + 1.2;
@@ -243,19 +217,19 @@
     const r = R * (0.5 + 0.5 * amp);
     // glow
     const g = oc.createRadialGradient(C, C, r * 0.1, C, C, r * 1.25);
-    g.addColorStop(0, 'rgba(197,126,203,0.30)'); g.addColorStop(0.7, 'rgba(197,126,203,0.08)'); g.addColorStop(1, 'rgba(197,126,203,0)');
+    g.addColorStop(0, 'rgba(197,126,203,0.22)'); g.addColorStop(0.7, 'rgba(197,126,203,0.07)'); g.addColorStop(1, 'rgba(197,126,203,0)');
     oc.fillStyle = g; oc.beginPath(); oc.arc(C, C, r * 1.25, 0, Math.PI * 2); oc.fill();
     // ring
-    oc.lineWidth = 3; oc.strokeStyle = 'rgba(197,126,203,0.9)';
+    oc.lineWidth = 3; oc.strokeStyle = 'rgba(154,85,160,0.85)';
     oc.beginPath(); oc.arc(C, C, r, 0, Math.PI * 2); oc.stroke();
     // the outer limit, faint
-    oc.lineWidth = 1.5; oc.strokeStyle = 'rgba(197,126,203,0.16)';
+    oc.lineWidth = 1.5; oc.strokeStyle = 'rgba(154,85,160,0.14)';
     oc.beginPath(); oc.arc(C, C, R, 0, Math.PI * 2); oc.stroke();
     // while the tone sounds: soft champagne ripples
     if (s.phase === 'out') {
       for (let j = 0; j < 3; j++) {
         const q = (s.k * 1.4 + j / 3) % 1;
-        oc.strokeStyle = `rgba(230,209,166,${(0.35 * (1 - q)).toFixed(3)})`;
+        oc.strokeStyle = `rgba(200,160,90,${(0.45 * (1 - q)).toFixed(3)})`;
         oc.lineWidth = 2;
         oc.beginPath(); oc.arc(C, C, r + q * R * 0.35, 0, Math.PI * 2); oc.stroke();
       }
@@ -272,7 +246,7 @@
     tc.clearRect(0, 0, TW, TH);
     if (history.length > 1) {
       const now = history[history.length - 1][0];
-      tc.setLineDash([12, 9]); tc.lineWidth = 3; tc.strokeStyle = '#E3A6E8';
+      tc.setLineDash([12, 9]); tc.lineWidth = 3; tc.strokeStyle = '#B06DB6';
       tc.beginPath();
       history.forEach(([t, a], i) => { const x = TW - (now - t) / 40 * TW, y = TH - 18 - a * (TH - 36); i ? tc.lineTo(x, y) : tc.moveTo(x, y); });
       tc.stroke(); tc.setLineDash([]);
