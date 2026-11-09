@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aeroba — guided breathing</title>
+<meta name="description" content="Aeroba is a breathing app for iPhone. Close your eyes, put in your earphones, and let a calm tone lead your breath.">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root {
+    --ground-top: #3A2545; --ground: #241732; --ground-deep: #150E1B;
+    --heading: #F0E6F1; --body: #CFC0D4; --muted: #A895AE;
+    --plum: #C57ECB; --gold-top: #F3E4C4; --gold-bottom: #D9BF8E; --gold-ink: #241732;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: radial-gradient(120% 80% at 50% 0%, var(--ground-top), var(--ground) 55%, var(--ground-deep));
+    background-color: var(--ground);
+    color: var(--body);
+    font: 18px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 16px;
+  }
+  main { max-width: 560px; width: 100%; text-align: center; padding: 12vh 0 6vh; flex: 1; }
+  .icon { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 0 60px rgba(197,126,203,.25); }
+  h1 { color: var(--heading); font-size: 44px; font-weight: 600; letter-spacing: .02em; margin: 28px 0 4px; }
+  .tagline { color: var(--plum); font-size: 20px; margin: 0 0 36px; }
+  p { margin: 0 0 18px; }
+  .soon {
+    display: inline-block; margin-top: 18px; padding: 12px 26px; border-radius: 999px;
+    background: linear-gradient(var(--gold-top), var(--gold-bottom)); color: var(--gold-ink);
+    font-weight: 600; font-size: 16px;
+  }
+  footer { color: var(--muted); font-size: 14px; padding: 24px 0 32px; }
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" src="icon.png" alt="Aeroba app icon">
+  <h1>Aeroba</h1>
+  <p class="tagline">Guided breathing for iPhone</p>
+  <p>Close your eyes, put in your earphones, and let a calm tone lead your breath.</p>
+  <p>Your phone rests on your belly and follows how you breathe, so each session moves at your pace.</p>
+  <span class="soon">Coming soon to the App Store</span>
+</main>
+<footer>© 2026 Aeroba · aeroba.nl</footer>
+</body>
+</html>
