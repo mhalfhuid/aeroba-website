@@ -2,50 +2,253 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aeroba — guided breathing</title>
-<meta name="description" content="Aeroba is a breathing app for iPhone. Close your eyes, put in your earphones, and let a calm tone lead your breath.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aeroba — meditation, minus the guesswork</title>
+<meta name="description" content="Aeroba turns your iPhone into a breathing guide. Lay it on your belly, put in your earphones and follow one warm tone as it slows your breath. Try it in your browser.">
+<meta name="theme-color" content="#241732">
+<meta property="og:title" content="Aeroba — meditation, minus the guesswork">
+<meta property="og:description" content="Your iPhone on your belly, one warm tone in your ears, a calmer breath in minutes.">
+<meta property="og:image" content="https://aeroba.nl/icon.png">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<style>
-  :root {
-    --ground-top: #3A2545; --ground: #241732; --ground-deep: #150E1B;
-    --heading: #F0E6F1; --body: #CFC0D4; --muted: #A895AE;
-    --plum: #C57ECB; --gold-top: #F3E4C4; --gold-bottom: #D9BF8E; --gold-ink: #241732;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; }
-  body {
-    background: radial-gradient(120% 80% at 50% 0%, var(--ground-top), var(--ground) 55%, var(--ground-deep));
-    background-color: var(--ground);
-    color: var(--body);
-    font: 18px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 0 16px;
-  }
-  main { max-width: 560px; width: 100%; text-align: center; padding: 12vh 0 6vh; flex: 1; }
-  .icon { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 0 60px rgba(197,126,203,.25); }
-  h1 { color: var(--heading); font-size: 44px; font-weight: 600; letter-spacing: .02em; margin: 28px 0 4px; }
-  .tagline { color: var(--plum); font-size: 20px; margin: 0 0 36px; }
-  p { margin: 0 0 18px; }
-  .soon {
-    display: inline-block; margin-top: 18px; padding: 12px 26px; border-radius: 999px;
-    background: linear-gradient(var(--gold-top), var(--gold-bottom)); color: var(--gold-ink);
-    font-weight: 600; font-size: 16px;
-  }
-  footer { color: var(--muted); font-size: 14px; padding: 24px 0 32px; }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;1,200;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<header class="bar">
+  <a class="wordmark" href="#home" data-tab="home" aria-label="Aeroba home">
+    <img src="mark.svg" alt=""><span>eroba</span>
+  </a>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#home" data-tab="home">Home</a>
+    <a href="#how" data-tab="how">How it works</a>
+    <a href="#try" data-tab="try" class="try-tab">Try it</a>
+    <a href="#faq" data-tab="faq">Questions</a>
+  </nav>
+</header>
+
 <main>
-  <img class="icon" src="icon.png" alt="Aeroba app icon">
-  <h1>Aeroba</h1>
-  <p class="tagline">Guided breathing for iPhone</p>
-  <p>Close your eyes, put in your earphones, and let a calm tone lead your breath.</p>
-  <p>Your phone rests on your belly and follows how you breathe, so each session moves at your pace.</p>
-  <span class="soon">Coming soon to the App Store</span>
+
+<!-- ───────────────────────── HOME ───────────────────────── -->
+<section class="page" id="page-home" data-page="home">
+
+  <div class="hero">
+    <div class="hero-text">
+      <p class="kicker">For everyone who tried to meditate</p>
+      <h1>Meditation,<br><em>minus the guesswork.</em></h1>
+      <p class="lead">You downloaded the app. You sat down. Your mind had other plans.
+        Aeroba skips the part nobody explains: <strong>it shows your body how to slow down</strong>,
+        one breath at a time.</p>
+      <div class="cta-row">
+        <a class="gold" href="#try" data-tab="try">Try it in your browser</a>
+        <span class="soon">iPhone app · coming soon</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="belly">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="mini-word"><img src="mark.svg" alt=""><span>eroba</span></div>
+            <p class="mini-session">Introduction · Your first breaths</p>
+            <div class="mini-ring"><span></span><img src="mark.svg" alt=""></div>
+            <p class="mini-cue">breathe out with the tone</p>
+          </div>
+        </div>
+        <svg class="belly-line" viewBox="0 0 400 80" preserveAspectRatio="none"><path d="M0 70 C 90 70, 120 22, 200 22 S 310 70, 400 70"/></svg>
+        <div class="notes"><span>♪</span><span>♪</span><span>♪</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trio">
+    <article class="card">
+      <div class="icon-dot">1</div>
+      <h3>Nothing to figure out</h3>
+      <p>No mantras, no “just observe your thoughts”. A warm flute-like tone tells you when to breathe out.
+        That’s the whole instruction.</p>
+    </article>
+    <article class="card">
+      <div class="icon-dot">2</div>
+      <h3>It listens back</h3>
+      <p>Your iPhone rests on your belly and feels every rise and fall. The tone follows <em>you</em>,
+        not a timer, and slows down only as fast as you can.</p>
+    </article>
+    <article class="card">
+      <div class="icon-dot">3</div>
+      <h3>Short enough for real life</h3>
+      <p>About ten minutes, eyes closed, one session a day. No streak guilt, no feed to scroll.
+        Just a calmer breath before your next thing.</p>
+    </article>
+  </div>
+
+  <div class="quote-band">
+    <p>“From twelve breaths a minute to seven, <em>without trying.</em>”</p>
+    <a class="ghost" href="#try" data-tab="try">Hear what that feels like →</a>
+  </div>
+
+  <div class="split">
+    <div>
+      <p class="kicker">Made for the curious</p>
+      <h2>A breathing coach<br>that runs on <em>sensors</em>, not willpower.</h2>
+      <p>Aeroba reads the tiny movement of your belly through your iPhone’s motion sensors, works out your
+        breathing pace as you go, and shapes the sound around it. After each session you see your own
+        breath, drawn as a line, slowing down.</p>
+      <ul class="ticks">
+        <li>Real-time breath tracking with the phone you already own</li>
+        <li>An adaptive tone that leads, then waits for you</li>
+        <li>Your breath as a graph after every session</li>
+        <li>A short course, plus a session for falling asleep</li>
+      </ul>
+    </div>
+    <figure class="graph-card">
+      <svg id="hero-graph" viewBox="0 0 520 260" role="img" aria-label="A graph of a session: the breath slows from 12 to 7 breaths a minute, following the tone"></svg>
+      <figcaption><span class="lg breath"></span>your breath <span class="lg tone"></span>the tone</figcaption>
+    </figure>
+  </div>
+
+</section>
+
+<!-- ───────────────────────── HOW ───────────────────────── -->
+<section class="page" id="page-how" data-page="how" hidden>
+  <div class="page-head">
+    <p class="kicker">How it works</p>
+    <h1>Four steps.<br><em>Then close your eyes.</em></h1>
+  </div>
+
+  <ol class="steps">
+    <li>
+      <span class="num">1</span>
+      <div><h3>Earphones in</h3>
+        <p>Any earphones work: wired, Bluetooth or AirPods. The tone needs to be close, so a session
+          only starts once they’re connected.</p></div>
+    </li>
+    <li>
+      <span class="num">2</span>
+      <div><h3>Phone on your belly</h3>
+        <p>Lie back or recline, and rest your iPhone just below your ribs. It feels your belly rise as you breathe in
+          and fall as you breathe out. Yes, really. It’s oddly comfortable.</p></div>
+    </li>
+    <li>
+      <span class="num">3</span>
+      <div><h3>Follow the tone</h3>
+        <p>Each time you hear it, breathe out with it, slowly. Let the in-breath come by itself.
+          The tone starts near your own pace and leads you down, step by gentle step.</p></div>
+    </li>
+    <li>
+      <span class="num">4</span>
+      <div><h3>See your breath</h3>
+        <p>When the session ends, you see your breath as a line, and the tone drawn above it.
+          Most people are surprised how far they went.</p></div>
+    </li>
+  </ol>
+
+  <div class="split why">
+    <div>
+      <p class="kicker">Why slow breathing</p>
+      <h2>The one part of your nervous system <em>you can steer.</em></h2>
+      <p>You can’t tell your heart to slow down. You can slow your breath, and your body follows.
+        Breathing around six to seven times a minute is the pace many breathing practices
+        settle into on their own. Aeroba simply gets you there without you needing to know any of that.</p>
+      <p class="fine">Aeroba is a wellness tool, not a medical device. If you have a heart, lung or anxiety
+        condition, talk to your doctor before starting any breathing practice.</p>
+    </div>
+    <div class="pace-scale" aria-label="Breaths per minute: everyday about 12 to 16, an Aeroba session ends near 7">
+      <div class="scale-row"><span>16</span><div class="tick-bar" style="--w:100%"></div><em>rushed</em></div>
+      <div class="scale-row"><span>12</span><div class="tick-bar" style="--w:75%"></div><em>everyday</em></div>
+      <div class="scale-row"><span>9</span><div class="tick-bar" style="--w:56%"></div><em>settling</em></div>
+      <div class="scale-row hi"><span>7</span><div class="tick-bar" style="--w:44%"></div><em>Aeroba</em></div>
+      <p class="scale-cap">breaths per minute</p>
+    </div>
+  </div>
+
+  <div class="center-cta">
+    <a class="gold" href="#try" data-tab="try">Try a breath now</a>
+  </div>
+</section>
+
+<!-- ───────────────────────── TRY ───────────────────────── -->
+<section class="page" id="page-try" data-page="try" hidden>
+  <div class="page-head">
+    <p class="kicker">Try Aeroba in your browser</p>
+    <h1>Put in your earphones.<br><em>Breathe out with the tone.</em></h1>
+    <p class="lead small">This is the Aeroba tone, starting at 12 breaths a minute and slowing to 7.
+      The browser can’t feel your breath like the app does, so here the tone simply leads.</p>
+  </div>
+
+  <div class="player" id="player">
+    <div class="mode-switch" role="tablist" aria-label="Mode">
+      <button role="tab" aria-selected="true" data-mode="guided">Guided · 3 min</button>
+      <button role="tab" aria-selected="false" data-mode="free">Free play</button>
+    </div>
+
+    <div class="orb-wrap">
+      <canvas id="orb" width="640" height="640" aria-hidden="true"></canvas>
+      <div class="orb-center">
+        <p class="cue" id="cue" aria-live="polite">Ready when you are</p>
+        <p class="bpm"><span id="bpm">12.0</span> <small>breaths / min</small></p>
+      </div>
+    </div>
+
+    <div class="trace-wrap">
+      <canvas id="trace" width="1200" height="160" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="controls">
+      <button class="gold big" id="start">Begin</button>
+      <div class="free-controls" id="free-controls" hidden>
+        <label for="pace">Pace <output id="pace-out">10.0</output></label>
+        <input type="range" id="pace" min="5" max="14" step="0.5" value="10">
+        <div class="pace-ends"><span>slower</span><span>faster</span></div>
+      </div>
+      <label class="toggle" id="voice-toggle"><input type="checkbox" id="voice" checked> <span>Voice</span></label>
+    </div>
+    <p class="hint">Best with earphones. On iPhone, switch the ringer on, or the browser stays silent.</p>
+  </div>
+</section>
+
+<!-- ───────────────────────── FAQ ───────────────────────── -->
+<section class="page" id="page-faq" data-page="faq" hidden>
+  <div class="page-head">
+    <p class="kicker">Questions</p>
+    <h1>The things people <em>actually</em> ask.</h1>
+  </div>
+  <div class="faq">
+    <details open><summary>I’ve never meditated. Is this for me?</summary>
+      <p>Especially for you. There’s nothing to learn first. If you can breathe out when you hear a sound,
+        you can do an Aeroba session.</p></details>
+    <details><summary>I tried meditation apps and gave up. Why would this be different?</summary>
+      <p>Most apps ask you to manage your attention. Aeroba gives your attention one simple job,
+        following a tone, while your breath does the real work. And it shows you afterwards
+        that something actually changed.</p></details>
+    <details><summary>Why on my belly?</summary>
+      <p>Your belly moves most when you breathe slowly and deeply. Lying there, the iPhone’s motion sensors
+        can feel every breath, so the tone can wait for you instead of running ahead.</p></details>
+    <details><summary>Do I need special earphones?</summary>
+      <p>No. Wired, Bluetooth or AirPods all work. A session starts once earphones are connected.</p></details>
+    <details><summary>How long is a session?</summary>
+      <p>About ten minutes. The app shows when a session will end before you start, so you can
+        silence alarms first.</p></details>
+    <details><summary>When can I get it?</summary>
+      <p>Aeroba is in a small pilot right now and comes to the App Store soon. Until then,
+        <a href="#try" data-tab="try">try the tone in your browser</a>.</p></details>
+    <details><summary>Is it a medical app?</summary>
+      <p>No. Aeroba is a wellness tool for relaxation. It doesn’t diagnose or treat anything.</p></details>
+  </div>
+</section>
+
 </main>
-<footer>© 2026 Aeroba · aeroba.nl</footer>
+
+<footer class="foot">
+  <div class="foot-word"><img src="mark.svg" alt=""><span>eroba</span></div>
+  <p>Breathe out with the tone. · © 2026 Aeroba · aeroba.nl</p>
+</footer>
+
+<script src="site.js"></script>
+<script src="breathe.js"></script>
 </body>
 </html>
